@@ -73,4 +73,58 @@ router.post("/register", (req, res) => {
   });
 });
 
+// @route   GET api/users/delete
+// @desc    delete a registered user
+// @access  Public
+
+router.delete("/:userId", (req, res) => {
+  const id = req.params.userId;
+  User.remove({
+    _id: id
+  })
+    .exec()
+    .then(result => {
+      res.status(200).json({ result });
+    })
+    .catch(err => {
+      res.status(500).json({
+        error: err.message
+      });
+    });
+});
+
+// @route   GET api/users/login
+// @desc    login user / returning JWT token
+// @access  Public
+router.post("/login", (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+
+  // find user by email
+  User.findOne({ email: email })
+    .then(user => {
+      // check for user
+      if (!user) {
+        return res.status(404).json({ email: "user not found" });
+      }
+      // check password
+      bcrypt.compare(password, user.password).then(isMatch => {
+        if (isMatch) {
+          res.json({
+            message: "success"
+          });
+        } else {
+          return res.status(404).json({
+            password: "Password incorrect"
+          });
+        }
+      });
+    })
+    .catch(err => {
+      res.status(500).json({
+        error: err.message
+      });
+    });
+});
+
 module.exports = router;

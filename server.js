@@ -7,6 +7,10 @@ const port = process.env.PORT || 5000;
 // db config
 const db = require("./config/key").mongoURI;
 
+// db variables
+
+require("dotenv").config();
+
 // cONNECT TO MONGODB
 mongoose
   .connect(db)

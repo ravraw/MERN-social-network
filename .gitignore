@@ -1,5 +1,6 @@
 node_modules
 config
+.env
 
 # Logs
 logs
@@ -39,4 +40,4 @@ server/node_modules
 
 # IDE
 .idea/
-©
+

@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs");
 const User = require("../../models/Users");
 const jwt = require("jsonwebtoken");
 const keys = require("../../config/key");
+const passport = require("passport");
 
 // @route   GET api/users/test
 // @desc    Tests users route
@@ -109,7 +110,7 @@ router.post("/login", (req, res) => {
       if (!user) {
         return res.status(404).json({ email: "user not found" });
       }
-      // check password
+      // check password if user is valid
       bcrypt.compare(password, user.password).then(isMatch => {
         if (isMatch) {
           //user matched
@@ -124,7 +125,7 @@ router.post("/login", (req, res) => {
           // sign token
           jwt.sign(
             payload,
-            keys.keyOrSecret,
+            keys.secretOrKey,
             { expiresIn: 3600 },
             (err, token) => {
               res.json({
@@ -146,5 +147,21 @@ router.post("/login", (req, res) => {
       });
     });
 });
+
+// @route   GET api/users/current
+// @desc    Returns current user
+// @access  Private
+
+router.get(
+  "/current",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    res.json({
+      id: req.user.id,
+      name: req.user.name,
+      email: req.user.email
+    });
+  }
+);
 
 module.exports = router;

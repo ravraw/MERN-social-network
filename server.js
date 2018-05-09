@@ -1,8 +1,9 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyparser = require("body-parser");
-const gravatar = require("gravatar");
-const bcrypt = require("bcryptjs");
+//const gravatar = require("gravatar");
+//const bcrypt = require("bcryptjs");
+const passport = require("passport");
 
 // Routes  endpoints
 const users = require("./routes/api/users");
@@ -32,9 +33,11 @@ mongoose
     console.log(err);
   });
 
-app.get("/", (req, res) => {
-  res.send("Hello World");
-});
+//Passport middleware
+app.use(passport.initialize());
+
+//passport Config
+require("./config/passport")(passport);
 
 // USE ROUTS TO HANDLE REQUESTS
 app.use("/api/users", users);

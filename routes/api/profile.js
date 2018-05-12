@@ -198,6 +198,32 @@ router.post(
   }
 );
 
+// @route   DELETE api/profile/experience/:exp_id
+// @desc DELETE experience from profile
+// @access  Private
+
+router.delete(
+  "/experience/:exp_id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Profile.findOne({ user: req.user.id })
+      .then(profile => {
+        //Get remove index
+        const exp_id = req.params.exp_id;
+        const index = profile.experience.findIndex(exp => exp._id === exp_id);
+        if (!index >= 0) {
+          return res
+            .status(404)
+            .json({ message: "No related experience details available" });
+        }
+        // remove experience
+        profile.experience.splice(index, 1);
+        profile.save().then(profile => res.json(profile));
+      })
+      .catch(err => res.status(404).json(err));
+  }
+);
+
 // @route   POST api/profile/education
 // @desc Add education  to profile
 // @access  Private
@@ -229,6 +255,50 @@ router.post(
         .then(profile => res.json(profile))
         .catch(err => res.json(err));
     });
+  }
+);
+
+// @route   DELETE api/profile/education/:edu_id
+// @desc DELETE education from profile
+// @access  Private
+
+router.delete(
+  "/education/:edu_id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Profile.findOne({ user: req.user.id })
+      .then(profile => {
+        // education id from request
+        const edu_id = req.params.edu_id;
+        //Get remove index
+        const index = profile.education.findIndex(edu => edu._id === edu_id);
+        if (!index >= 0) {
+          return res
+            .status(404)
+            .json({ message: "No related eduaction details available" });
+        }
+        // Splice out of array
+        profile.education.splice(index, 1);
+        //save
+        profile.save().then(profile => res.json(profile));
+      })
+      .catch(err => res.status(404).json(err));
+  }
+);
+
+// @route   DELETE api/profile
+// @desc delete User and profile
+// @access  Private
+
+router.delete(
+  "/",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Profile.findOneAndRemove({ user: req.user.id }).then(
+      User.findOneAndRemove({ _id: req.user.id }).then(() =>
+        res.json({ success: true })
+      )
+    );
   }
 );
 

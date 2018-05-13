@@ -115,6 +115,7 @@ router.delete("/:userId", (req, res) => {
 // @route   GET api/users/login
 // @desc    login user / returning JWT token
 // @access  Public
+
 router.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
